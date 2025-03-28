@@ -1,16 +1,15 @@
 ﻿using System;
 using System.IO;
+using ILNumerics.Community.TikzExport.Generator;
+using ILNumerics.Community.TikzExport.Generator.Elements;
+using ILNumerics.Community.TikzExport.Generator.Global;
 using ILNumerics.Drawing;
-using TikzExport.Generator;
-using TikzExport.Generator.Elements;
-using TikzExport.Generator.Global;
-using Size = System.Drawing.Size;
 
-namespace TikzExport;
+namespace ILNumerics.Community.TikzExport;
 
 public static class TikzExport
 {
-    public static string ExportString(Scene scene, Size canvasSize = default)
+    public static string ExportString(Scene scene, System.Drawing.Size canvasSize = default)
     {
         if (scene == null)
             throw new ArgumentNullException(nameof(scene));
@@ -23,7 +22,7 @@ public static class TikzExport
         }
     }
 
-    public static void ExportFile(Scene scene, string filePath, Size canvasSize = default)
+    public static void ExportFile(Scene scene, string filePath, System.Drawing.Size canvasSize = default)
     {
         if (scene == null)
             throw new ArgumentNullException(nameof(scene));
@@ -38,7 +37,7 @@ public static class TikzExport
         }
     }
 
-    public static void Export(Scene scene, TextWriter writer, Size canvasSize = default)
+    public static void Export(Scene scene, TextWriter writer, System.Drawing.Size canvasSize = default)
     {
         if (scene == null)
             throw new ArgumentNullException(nameof(scene));
@@ -53,7 +52,7 @@ public static class TikzExport
         tikzWriter.Write(tikzPicture);
     }
 
-    public static TikzPicture Bind(Scene scene, Size canvasSize = default)
+    public static TikzPicture Bind(Scene scene, System.Drawing.Size canvasSize = default)
     {
         if (scene == null)
             throw new ArgumentNullException(nameof(scene));

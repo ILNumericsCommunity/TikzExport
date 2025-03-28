@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Drawing;
+using ILNumerics.Community.TikzExport.Generator.Global;
 using ILNumerics.Drawing;
-using TikzExport.Generator.Global;
 
-namespace TikzExport.Generator;
+namespace ILNumerics.Community.TikzExport.Generator;
 
 public static class TikzFormatUtility
 {

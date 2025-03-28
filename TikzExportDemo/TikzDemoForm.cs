@@ -2,6 +2,7 @@
 using System.Drawing;
 using System.Windows.Forms;
 using ILNumerics;
+using ILNumerics.Community.TikzExport;
 using ILNumerics.Drawing;
 using ILNumerics.Drawing.Plotting;
 using static ILNumerics.ILMath;
@@ -154,12 +155,12 @@ public partial class TikzDemoForm : Form
 
         var size = new Size(120, 120);
         var currentScene = ilPanel.GetCurrentScene() ?? ilPanel.Scene;
-        TikzExport.TikzExport.ExportFile(currentScene, saveFileDialog.FileName, size);
+        TikzExport.ExportFile(currentScene, saveFileDialog.FileName, size);
     }
 
     private void btnExportText_Click(object sender, EventArgs e)
     {
         var currentScene = ilPanel.GetCurrentScene() ?? ilPanel.Scene;
-        textBoxTikz.Text = TikzExport.TikzExport.ExportString(currentScene);
+        textBoxTikz.Text = TikzExport.ExportString(currentScene);
     }
 }

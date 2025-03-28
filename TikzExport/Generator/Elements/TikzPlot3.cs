@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using ILNumerics.Community.TikzExport.Generator.Global;
 using ILNumerics.Drawing;
-using TikzExport.Generator.Global;
 
-namespace TikzExport.Generator.Elements;
+namespace ILNumerics.Community.TikzExport.Generator.Elements;
 
 public class TikzPlot3 : ITikzElement
 {

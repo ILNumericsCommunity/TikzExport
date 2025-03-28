@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Drawing;
 using ILNumerics.Drawing;
-using static TikzExport.Generator.TikzColormapUtility;
+using static ILNumerics.Community.TikzExport.Generator.TikzColormapUtility;
 
-namespace TikzExport.Generator.Global;
+namespace ILNumerics.Community.TikzExport.Generator.Global;
 
 public sealed class PGFPlotOptions : List<string>, ITikzElement
 {

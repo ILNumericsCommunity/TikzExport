@@ -1,9 +1,9 @@
 ﻿using System.Linq;
+using ILNumerics.Community.TikzExport.Generator.Elements;
+using ILNumerics.Community.TikzExport.Generator.Global;
 using ILNumerics.Drawing;
-using TikzExport.Generator.Elements;
-using TikzExport.Generator.Global;
 
-namespace TikzExport.Generator;
+namespace ILNumerics.Community.TikzExport.Generator;
 
 public static class TikzBinderExtensions
 {

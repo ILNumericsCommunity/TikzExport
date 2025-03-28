@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using ILNumerics.Community.TikzExport.Generator.Global;
 using ILNumerics.Drawing;
-using TikzExport.Generator.Global;
-using static TikzExport.Generator.TikzFormatUtility;
+using static ILNumerics.Community.TikzExport.Generator.TikzFormatUtility;
 
-namespace TikzExport.Generator.Elements;
+namespace ILNumerics.Community.TikzExport.Generator.Elements;
 
 public class TikzPlot : ITikzElement
 {

@@ -33,7 +33,7 @@
 	</PropertyGroup>
 	<!-- Assembly Info -->
 	<PropertyGroup>
-		<Product>ILNumerics.Community.TikzExport</Product>
+		<Product>TikzExport (by the ILNumerics Community)</Product>
 		<Description>Export functionality for ILNumerics (http://ilnumerics.net/) scene graphs and plot cubes to Tikz/PGFPlots (LaTeX graphics package)</Description>
 		<Authors>Thilo Viereck</Authors>
 		<Company></Company>
@@ -43,8 +43,8 @@
 		<PackageReadmeFile>Readme.md</PackageReadmeFile>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<PackageProjectUrl>https://github.com/ILNumericsCommunity/TikzExport</PackageProjectUrl>
-		<RepositoryUrl>https://github.com/ILNumericsCommunity/TikzExport</RepositoryUrl>
-		<RepositoryType>git</RepositoryType>
+    <RepositoryUrl>https://github.com/ILNumericsCommunity/TikzExport</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
 	</PropertyGroup>
 	<!-- Packaging -->
 	<!--<PropertyGroup Condition="'$(Configuration)' == 'Release'">-->

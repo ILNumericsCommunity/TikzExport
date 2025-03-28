@@ -1,7 +1,7 @@
 ﻿using System.IO;
-using TikzExport.Generator.Elements;
+using ILNumerics.Community.TikzExport.Generator.Elements;
 
-namespace TikzExport.Generator;
+namespace ILNumerics.Community.TikzExport.Generator;
 
 public class TikzWriter
 {
