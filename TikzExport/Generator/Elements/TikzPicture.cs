@@ -1,23 +1,22 @@
 ﻿using System.Collections.Generic;
+using ILNumerics.Community.TikzExport.Generator.Global;
 using ILNumerics.Drawing;
-using TikzExport.Generator.Global;
-using Size = System.Drawing.Size;
 
-namespace TikzExport.Generator.Elements;
+namespace ILNumerics.Community.TikzExport.Generator.Elements;
 
 public class TikzPicture : TikzGroupElementBase
 {
     private TikzGlobals _globals;
 
-    public TikzPicture(Size canvasSize = default)
+    public TikzPicture(System.Drawing.Size canvasSize = default)
     {
         if (canvasSize.Width == 0 || canvasSize.Height == 0)
-            canvasSize = new Size(100, 100); // Default size
+            canvasSize = new System.Drawing.Size(100, 100); // Default size
 
         CanvasSize = canvasSize;
     }
 
-    public Size CanvasSize { get; }
+    public System.Drawing.Size CanvasSize { get; }
 
     #region Implementation of ITikzElement
 

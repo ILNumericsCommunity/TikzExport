@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using ILNumerics.Drawing;
 
-namespace TikzExport.Generator.Global;
+namespace ILNumerics.Community.TikzExport.Generator.Global;
 
 public class TikzColors : ICollection<Color>, ITikzElement
 {

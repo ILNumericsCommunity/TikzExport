@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
+using ILNumerics.Community.TikzExport.Generator.Global;
 using ILNumerics.Drawing;
-using TikzExport.Generator.Global;
 
-namespace TikzExport.Generator;
+namespace ILNumerics.Community.TikzExport.Generator;
 
 public interface ITikzElement
 {

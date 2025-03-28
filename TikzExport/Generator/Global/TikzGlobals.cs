@@ -1,17 +1,15 @@
-﻿using Size = System.Drawing.Size;
-
-namespace TikzExport.Generator.Global;
+﻿namespace ILNumerics.Community.TikzExport.Generator.Global;
 
 public sealed class TikzGlobals
 {
     public TikzGlobals()
     {
-        CanvasSize = new Size(100, 100);
+        CanvasSize = new System.Drawing.Size(100, 100);
         PGFPlotOptions = new PGFPlotOptions(this);
         Colors = new TikzColors();
     }
 
-    public Size CanvasSize { get; set; }
+    public System.Drawing.Size CanvasSize { get; set; }
         
     public PGFPlotOptions PGFPlotOptions { get; }
 

@@ -1,7 +1,7 @@
 ﻿using System.Text;
 using ILNumerics.Drawing;
 
-namespace TikzExport.Generator;
+namespace ILNumerics.Community.TikzExport.Generator;
 
 public static class TikzColormapUtility
 {

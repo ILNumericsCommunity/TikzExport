@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Globalization;
 using System.Linq;
+using ILNumerics.Community.TikzExport.Generator.Global;
 using ILNumerics.Drawing;
-using TikzExport.Generator.Global;
 
-namespace TikzExport.Generator.Elements;
+namespace ILNumerics.Community.TikzExport.Generator.Elements;
 
 public class TikzAxis : TikzGroupElementBase, ITikzGroupElement
 {
