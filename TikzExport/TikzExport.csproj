@@ -5,9 +5,9 @@
     <AssemblyName>ILNumerics.Community.TikzExport</AssemblyName>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="ILNumerics.Computing" Version="7.2.35" />
-    <PackageReference Include="ILNumerics.Drawing" Version="7.2.35" />
-    <PackageReference Include="ILNumerics.Toolboxes.Drawing2" Version="7.2.35" />
+    <PackageReference Include="ILNumerics.Computing" Version="7.2.41" />
+    <PackageReference Include="ILNumerics.Drawing" Version="7.2.41" />
+    <PackageReference Include="ILNumerics.Toolboxes.Drawing2" Version="7.2.41" />
     <PackageReference Include="AnyAscii" Version="0.3.3" />
     <PackageReference Include="MinVer" Version="6.0.0">
       <PrivateAssets>all</PrivateAssets>
