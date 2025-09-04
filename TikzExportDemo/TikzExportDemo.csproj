@@ -7,10 +7,10 @@
     <IsPackable>false</IsPackable>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="ILNumerics.Computing" Version="7.1.22" />
-    <PackageReference Include="ILNumerics.Drawing" Version="7.1.22" />
-    <PackageReference Include="ILNumerics.Drawing.Platforms" Version="7.1.22" />
-    <PackageReference Include="ILNumerics.Toolboxes.Drawing2" Version="7.1.22" />
+    <PackageReference Include="ILNumerics.Computing" Version="7.2.35" />
+    <PackageReference Include="ILNumerics.Drawing" Version="7.2.35" />
+    <PackageReference Include="ILNumerics.Drawing.Platforms" Version="7.2.35" />
+    <PackageReference Include="ILNumerics.Toolboxes.Drawing2" Version="7.2.35" />
     <PackageReference Include="MinVer" Version="6.0.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
