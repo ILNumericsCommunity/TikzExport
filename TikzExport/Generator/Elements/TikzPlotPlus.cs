@@ -7,12 +7,31 @@ using static ILNumerics.Community.TikzExport.Generator.TikzFormatUtility;
 
 namespace ILNumerics.Community.TikzExport.Generator.Elements;
 
+/// <summary>
+/// Represents a line plot with error bars.
+/// </summary>
 public class TikzPlotPlus : TikzPlot
 {
     private ErrorBarPlot errorBarPlot;
 
-    #region Implementation of ITikzElement
+    /// <summary>
+    /// Gets the data table content for the error bar plot.
+    /// </summary>
+    public override IEnumerable<string> Content
+    {
+        get
+        {
+            if (linePlot != null)
+            {
+                foreach (var tableEntry in FormatErrorDataTable(errorBarPlot))
+                    yield return tableEntry;
+            }
+        }
+    }
 
+    /// <summary>
+    /// Gets the opening TikZ command for the plot with error bars.
+    /// </summary>
     public override string PreTag
     {
         get
@@ -29,18 +48,11 @@ public class TikzPlotPlus : TikzPlot
         }
     }
 
-    public override IEnumerable<string> Content
-    {
-        get
-        {
-            if (linePlot != null)
-            {
-                foreach (var tableEntry in FormatErrorDataTable(errorBarPlot))
-                    yield return tableEntry;
-            }
-        }
-    }
-
+    /// <summary>
+    /// Binds the plot to an error bar plot node.
+    /// </summary>
+    /// <param name="node">The node to bind.</param>
+    /// <param name="globals">The shared globals.</param>
     public override void Bind(Node node, TikzGlobals globals)
     {
         this.globals = globals;
@@ -55,26 +67,10 @@ public class TikzPlotPlus : TikzPlot
         ErrorBarWidth = errorBarPlot.ErrorBar.Width;
 
         this.errorBarPlot = errorBarPlot; // Reference for data table
-            
+
         // Delegate LinePlot to TikzPlot
         base.Bind(errorBarPlot.LinePlot, globals);
     }
-
-    #endregion
-
-    #region Properties
-
-    #region ErrorBar
-
-    public Color ErrorBarColor { get; set; }
-
-    public DashStyle ErrorBarStyle { get; set; }
-
-    public int ErrorBarWidth { get; set; }
-
-    #endregion
-
-    #endregion
 
     #region Helpers
 
@@ -90,11 +86,10 @@ public class TikzPlotPlus : TikzPlot
         for (var i = 0; i < linePlotPositions.S[1]; i++)
         {
             // Line plot
-            Array<float> xyz = linePlotPositions[full, i];
-            var x = (float) xyz[0];
+            var x = linePlotPositions.GetValue(0, i);
             if (scaleModes.XAxisScale == AxisScale.Logarithmic)
                 x = (float) Math.Pow(10.0, x);
-            var y = (float) xyz[1];
+            var y = linePlotPositions.GetValue(1, i);
             if (scaleModes.YAxisScale == AxisScale.Logarithmic)
                 y = (float) Math.Pow(10.0, y);
 
@@ -124,6 +119,29 @@ public class TikzPlotPlus : TikzPlot
 
         yield return "};";
     }
+
+    #endregion
+
+    #region Properties
+
+    #region ErrorBar
+
+    /// <summary>
+    /// Gets or sets the error bar color.
+    /// </summary>
+    public Color ErrorBarColor { get; set; }
+
+    /// <summary>
+    /// Gets or sets the error bar line style.
+    /// </summary>
+    public DashStyle ErrorBarStyle { get; set; }
+
+    /// <summary>
+    /// Gets or sets the error bar line width.
+    /// </summary>
+    public int ErrorBarWidth { get; set; }
+
+    #endregion
 
     #endregion
 }

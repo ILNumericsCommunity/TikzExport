@@ -6,17 +6,23 @@ using ILNumerics.Drawing;
 
 namespace ILNumerics.Community.TikzExport.Generator.Elements;
 
+/// <summary>
+/// Represents a 3D surface plot in TikZ.
+/// </summary>
 public class TikzPlot3 : ITikzElement
 {
     private Group surface;
 
     #region Implementation of ITikzElement
 
-    public string PreTag
-    {
-        get { return @"\addplot3[surf,z buffer=sort,shader=faceted]"; }
-    }
+    /// <summary>
+    /// Gets the opening TikZ command for the 3D plot.
+    /// </summary>
+    public string PreTag => @"\addplot3[surf,z buffer=sort,shader=faceted]";
 
+    /// <summary>
+    /// Gets the data table content for the 3D plot.
+    /// </summary>
     public IEnumerable<string> Content
     {
         get
@@ -29,11 +35,16 @@ public class TikzPlot3 : ITikzElement
         }
     }
 
-    public string PostTag
-    {
-        get { return ""; }
-    }
+    /// <summary>
+    /// Gets the closing TikZ command for the 3D plot.
+    /// </summary>
+    public string PostTag => "";
 
+    /// <summary>
+    /// Binds the plot to a surface node.
+    /// </summary>
+    /// <param name="node">The node to bind.</param>
+    /// <param name="globals">The shared globals.</param>
     public void Bind(Node node, TikzGlobals globals)
     {
         if (node is FastSurface fastSurface)
