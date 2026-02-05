@@ -42,11 +42,11 @@ public class TikzAxis : TikzGroupElementBase, ITikzGroupElement
 
     #endregion
 
-    private TikzGlobals globals;
+    private TikzGlobals? globals;
 
-    private float[] xTicks;
-    private float[] yTicks;
-    private float[] zTicks;
+    private float[]? xTicks;
+    private float[]? yTicks;
+    private float[]? zTicks;
 
     #region Implementation of ITikzGroupElement
 
@@ -62,6 +62,9 @@ public class TikzAxis : TikzGroupElementBase, ITikzGroupElement
     {
         get
         {
+            if (globals == null)
+                yield break;
+
             #region Global
 
             yield return $"  width={globals.CanvasSize.Width}mm,";
@@ -253,7 +256,7 @@ public class TikzAxis : TikzGroupElementBase, ITikzGroupElement
 
             #region Legend
 
-            if (LegendVisible)
+            if (LegendVisible && globals != null)
                 yield return FormatTikzLegendStyle;
 
             #endregion
@@ -387,7 +390,7 @@ public class TikzAxis : TikzGroupElementBase, ITikzGroupElement
     /// <summary>
     /// Gets or sets the axis title.
     /// </summary>
-    public string Title { get; set; }
+    public string? Title { get; set; }
 
     /// <summary>
     /// Gets or sets the azimuth view angle.
@@ -463,7 +466,7 @@ public class TikzAxis : TikzGroupElementBase, ITikzGroupElement
     /// <summary>
     /// Gets or sets the X-axis label.
     /// </summary>
-    public string XLabel { get; set; }
+    public string? XLabel { get; set; }
 
     /// <summary>
     /// Gets or sets the X-axis scale type.
@@ -488,7 +491,7 @@ public class TikzAxis : TikzGroupElementBase, ITikzGroupElement
     /// <summary>
     /// Gets or sets custom X-axis tick positions.
     /// </summary>
-    public float[] XTicks
+    public float[]? XTicks
     {
         get => xTicks;
         set
@@ -530,7 +533,7 @@ public class TikzAxis : TikzGroupElementBase, ITikzGroupElement
     /// <summary>
     /// Gets or sets the Y-axis label.
     /// </summary>
-    public string YLabel { get; set; }
+    public string? YLabel { get; set; }
 
     /// <summary>
     /// Gets or sets the Y-axis scale type.
@@ -555,7 +558,7 @@ public class TikzAxis : TikzGroupElementBase, ITikzGroupElement
     /// <summary>
     /// Gets or sets custom Y-axis tick positions.
     /// </summary>
-    public float[] YTicks
+    public float[]? YTicks
     {
         get => yTicks;
         set
@@ -597,7 +600,7 @@ public class TikzAxis : TikzGroupElementBase, ITikzGroupElement
     /// <summary>
     /// Gets or sets the Z-axis label.
     /// </summary>
-    public string ZLabel { get; set; }
+    public string? ZLabel { get; set; }
 
     /// <summary>
     /// Gets or sets the Z-axis scale type.
@@ -622,7 +625,7 @@ public class TikzAxis : TikzGroupElementBase, ITikzGroupElement
     /// <summary>
     /// Gets or sets custom Z-axis tick positions.
     /// </summary>
-    public float[] ZTicks
+    public float[]? ZTicks
     {
         get => zTicks;
         set
@@ -731,9 +734,11 @@ public class TikzAxis : TikzGroupElementBase, ITikzGroupElement
         => FormattableString.Invariant($"  legend style={{legend cell align=left,align=left,{FormatTikzLegendColors},{FormatTikzLegendLocation}}},");
 
     private string FormatTikzLegendColors
-        => FormattableString.Invariant($"fill={globals.Colors.GetColorName(LegendBackgroundColor)},draw={globals.Colors.GetColorName(LegendBorderColor)}");
+        => globals == null
+            ? String.Empty
+            : FormattableString.Invariant($"fill={globals.Colors.GetColorName(LegendBackgroundColor)},draw={globals.Colors.GetColorName(LegendBorderColor)}");
 
-    private string FormatTikzLegendLocation => FormattableString.Invariant($"at={{({LegendLocation.X},{1f - LegendLocation.Y})}}");
+    private string FormatTikzLegendLocation => globals == null ? String.Empty : FormattableString.Invariant($"at={{({LegendLocation.X},{1f - LegendLocation.Y})}}");
 
     #endregion
 

@@ -17,7 +17,7 @@ PGF/TikZ is a pair of languages for producing vector graphics from a geometric o
 
 **Supported plot types**
 
-As of March 2025 (only) the following plot types are supported:
+As of February 2026 (only) the following plot types are supported:
 
 - LinePlot
 - ErrorBarPlot (y-error only)

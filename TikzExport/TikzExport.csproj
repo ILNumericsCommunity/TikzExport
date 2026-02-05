@@ -1,15 +1,17 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
     <RootNamespace>ILNumerics.Community.TikzExport</RootNamespace>
     <AssemblyName>ILNumerics.Community.TikzExport</AssemblyName>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="ILNumerics.Computing" Version="7.2.41" />
-    <PackageReference Include="ILNumerics.Drawing" Version="7.2.41" />
-    <PackageReference Include="ILNumerics.Toolboxes.Drawing2" Version="7.2.41" />
+    <PackageReference Include="ILNumerics.Computing" Version="7.4.16" />
+    <PackageReference Include="ILNumerics.Community.Analyzers" Version="7.3.0.66" />
+    <PackageReference Include="ILNumerics.Drawing" Version="7.4.16" />
+    <PackageReference Include="ILNumerics.Toolboxes.Drawing2" Version="7.4.16" />
     <PackageReference Include="AnyAscii" Version="0.3.3" />
-    <PackageReference Include="MinVer" Version="6.0.0">
+    <PackageReference Include="MinVer" Version="7.0.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>

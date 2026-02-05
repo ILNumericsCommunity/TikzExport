@@ -12,7 +12,7 @@ namespace ILNumerics.Community.TikzExport.Generator.Elements;
 /// </summary>
 public class TikzPlotPlus : TikzPlot
 {
-    private ErrorBarPlot errorBarPlot;
+    private ErrorBarPlot? errorBarPlot;
 
     /// <summary>
     /// Gets the data table content for the error bar plot.
@@ -21,7 +21,7 @@ public class TikzPlotPlus : TikzPlot
     {
         get
         {
-            if (linePlot != null)
+            if (linePlot != null && errorBarPlot != null)
             {
                 foreach (var tableEntry in FormatErrorDataTable(errorBarPlot))
                     yield return tableEntry;
@@ -36,6 +36,9 @@ public class TikzPlotPlus : TikzPlot
     {
         get
         {
+            if (globals == null)
+                return String.Empty;
+
             var lineStyle = FormatLine(globals, LineColor, LineStyle, LineWidth);
             var errorBars = FormatErrorBars(globals, ErrorBarColor, ErrorBarStyle, ErrorBarWidth);
 

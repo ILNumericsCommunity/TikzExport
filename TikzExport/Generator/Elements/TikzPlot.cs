@@ -13,8 +13,8 @@ namespace ILNumerics.Community.TikzExport.Generator.Elements;
 /// </summary>
 public class TikzPlot : ITikzElement
 {
-    protected TikzGlobals globals;
-    protected LinePlot linePlot;
+    protected TikzGlobals? globals;
+    protected LinePlot? linePlot;
 
     #region Implementation of ITikzElement
 
@@ -25,6 +25,9 @@ public class TikzPlot : ITikzElement
     {
         get
         {
+            if (globals == null)
+                return String.Empty;
+
             var lineStyle = FormatLine(globals, LineColor, LineStyle, LineWidth);
 
             if (MarkerStyle == MarkerStyle.None)
@@ -171,7 +174,7 @@ public class TikzPlot : ITikzElement
     /// <summary>
     /// Gets or sets the legend text.
     /// </summary>
-    public string LegendItemText { get; set; }
+    public string? LegendItemText { get; set; }
 
     #endregion
 

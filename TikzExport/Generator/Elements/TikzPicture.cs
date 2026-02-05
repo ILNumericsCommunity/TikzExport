@@ -11,7 +11,7 @@ namespace ILNumerics.Community.TikzExport.Generator.Elements;
 /// </summary>
 public class TikzPicture : TikzGroupElementBase
 {
-    private TikzGlobals _globals;
+    private TikzGlobals? _globals;
     private bool _hasContent;
 
     /// <summary>
@@ -38,11 +38,13 @@ public class TikzPicture : TikzGroupElementBase
     {
         get
         {
-            if (!_hasContent)
+            if (!_hasContent || _globals == null)
                 yield break;
 
+            var globals = _globals;
+
             // Colors
-            foreach (var colorDef in _globals.Colors.Content)
+            foreach (var colorDef in globals.Colors.Content)
                 yield return colorDef;
 
             yield return "";
@@ -50,7 +52,7 @@ public class TikzPicture : TikzGroupElementBase
             yield return @"\begin{tikzpicture}";
 
             // PGFPlots Options
-            foreach (var pgfPlotsOption in _globals.PGFPlotOptions.Content)
+            foreach (var pgfPlotsOption in globals.PGFPlotOptions.Content)
                 yield return pgfPlotsOption;
 
             // Child Elements
