@@ -3,6 +3,9 @@ using ILNumerics.Drawing;
 
 namespace ILNumerics.Community.TikzExport.Generator;
 
+/// <summary>
+/// Provides helpers for mapping ILNumerics colormaps to PGFPlots colormaps.
+/// </summary>
 public static class TikzColormapUtility
 {
     #region Colormap

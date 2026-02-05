@@ -55,11 +55,17 @@ public partial class TikzDemoForm : Form
             case (int) PlotVariants.LinePlot:
             {
                 Array<float> A = tosingle(rand(13, 10)) + arange<float>(0, 12);
-                var linePlot = LinePlot.CreateXPlots(A,
-                                                     lineStyles: new[] { DashStyle.Solid, DashStyle.Solid, DashStyle.Solid, DashStyle.Solid, DashStyle.Dashed,
-                                                         DashStyle.Dashed, DashStyle.Dashed, DashStyle.PointDash, DashStyle.PointDash, DashStyle.PointDash,
-                                                         DashStyle.Dotted, DashStyle.Dotted, DashStyle.Dotted },
-                                                     lineWidth: new[] { 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1 });
+                var linePlot =
+                    LinePlot.CreateXPlots(A,
+                                          lineStyles: new[]
+                                          {
+                                              DashStyle.Solid, DashStyle.Solid, DashStyle.Solid, DashStyle.Solid, DashStyle.Dashed, DashStyle.Dashed, DashStyle.Dashed,
+                                              DashStyle.PointDash, DashStyle.PointDash, DashStyle.PointDash, DashStyle.Dotted, DashStyle.Dotted, DashStyle.Dotted
+                                          }, lineWidth: new[]
+                                          {
+                                              1, 2, 3, 1, 2, 3, 1, 2, 3, 1,
+                                              2, 3, 1
+                                          });
 
                 plotCube.Add(linePlot);
                 break;
@@ -110,13 +116,12 @@ public partial class TikzDemoForm : Form
             // Surface
             case (int) PlotVariants.Surface:
             {
-                var surface = new Surface((x, y) => (float) (Math.Sin(x) * Math.Cos(y) * Math.Exp(-((x * x) + (y * y)) / 46)),
-                                          -10, 10, 40, -5, 5, 40);
+                var surface = new Surface((x, y) => (float) (Math.Sin(x) * Math.Cos(y) * Math.Exp(-((x * x) + (y * y)) / 46)), -10, 10, 40, -5, 5, 40);
                 surface.Colormap = Colormaps.Jet;
 
                 plotCube.Add(surface);
                 plotCube.TwoDMode = false;
-                plotCube.Rotation = Matrix4.Rotation(new Vector3(1f,0.23f,1), 0.7f);
+                plotCube.Rotation = Matrix4.Rotation(new Vector3(1f, 0.23f, 1), 0.7f);
                 plotCube.Axes.XAxis.Label.Text = "B in 10^{-3} V_{rms}";
                 plotCube.Axes.YAxis.Label.Text = "Area_{ABC} / m^2";
                 plotCube.Axes.ZAxis.Label.Text = "Greek α^β+μ_π";
@@ -131,7 +136,7 @@ public partial class TikzDemoForm : Form
 
                 plotCube.Add(fastSurface);
                 plotCube.TwoDMode = false;
-                plotCube.Rotation = Matrix4.Rotation(new Vector3(1f,0.23f,1), 0.7f);
+                plotCube.Rotation = Matrix4.Rotation(new Vector3(1f, 0.23f, 1), 0.7f);
                 break;
             }
         }

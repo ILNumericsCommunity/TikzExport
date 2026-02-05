@@ -8,14 +8,30 @@ using ILNumerics.Drawing;
 
 namespace ILNumerics.Community.TikzExport.Generator.Elements;
 
+/// <summary>
+/// Represents a PGFPlots axis bound to a plot cube.
+/// </summary>
 public class TikzAxis : TikzGroupElementBase, ITikzGroupElement
 {
-    private TikzGlobals globals;
+    #region TicksAlignEnum enum
 
-    private float[] xTicks;
-    private float[] yTicks;
-    private float[] zTicks;
+    /// <summary>
+    /// Defines the alignment of tick marks relative to the axis.
+    /// </summary>
+    public enum TicksAlignEnum
+    {
+        Inside,
+        Center,
+        Outside
+    }
 
+    #endregion
+
+    #region TicksModeEnum enum
+
+    /// <summary>
+    /// Defines how ticks are generated for an axis.
+    /// </summary>
     public enum TicksModeEnum
     {
         None,
@@ -24,20 +40,24 @@ public class TikzAxis : TikzGroupElementBase, ITikzGroupElement
         Auto
     }
 
-    public enum TicksAlignEnum
-    {
-        Inside,
-        Center,
-        Outside
-    }
+    #endregion
 
-    #region Implementation of ITikzElement
+    private TikzGlobals globals;
 
-    public override string PreTag
-    {
-        get { return @"\begin{axis}["; }
-    }
+    private float[] xTicks;
+    private float[] yTicks;
+    private float[] zTicks;
 
+    #region Implementation of ITikzGroupElement
+
+    /// <summary>
+    /// Gets the opening TikZ axis command.
+    /// </summary>
+    public override string PreTag => @"\begin{axis}[";
+
+    /// <summary>
+    /// Gets the content lines for the axis definition.
+    /// </summary>
     public override IEnumerable<string> Content
     {
         get
@@ -48,7 +68,7 @@ public class TikzAxis : TikzGroupElementBase, ITikzGroupElement
             yield return $"  height={globals.CanvasSize.Height}mm,";
 
             if (!String.IsNullOrEmpty(Title))
-                yield return $"  title='{{{TikzTextUtility.EscapeText(Title)}}},";
+                yield return $"  title={{{TikzTextUtility.EscapeText(Title)}}},";
 
             yield return FormattableString.Invariant($"  view={{({ViewAzimuth})}}{{({ViewElevation})}},");
 
@@ -81,7 +101,7 @@ public class TikzAxis : TikzGroupElementBase, ITikzGroupElement
                     break;
                 case TicksModeEnum.Custom:
                     if (XTicks != null)
-                        yield return $"  xticks={String.Join(",", XTicks.Select(x => x.ToString("F", CultureInfo.InvariantCulture)))}";
+                        yield return $"  xticks={String.Join(",", XTicks.Select(x => x.ToString("F", CultureInfo.InvariantCulture)))},";
                     break;
                 case TicksModeEnum.Auto:
                     break;
@@ -138,7 +158,7 @@ public class TikzAxis : TikzGroupElementBase, ITikzGroupElement
                     break;
                 case TicksModeEnum.Custom:
                     if (YTicks != null)
-                        yield return $"  yticks={String.Join(",", YTicks.Select(x => x.ToString("F", CultureInfo.InvariantCulture)))}";
+                        yield return $"  yticks={String.Join(",", YTicks.Select(x => x.ToString("F", CultureInfo.InvariantCulture)))},";
                     break;
                 case TicksModeEnum.Auto:
                     break;
@@ -198,7 +218,7 @@ public class TikzAxis : TikzGroupElementBase, ITikzGroupElement
                         break;
                     case TicksModeEnum.Custom:
                         if (ZTicks != null)
-                            yield return $"  zticks={String.Join(",", ZTicks.Select(x => x.ToString("F", CultureInfo.InvariantCulture)))}";
+                            yield return $"  zticks={String.Join(",", ZTicks.Select(x => x.ToString("F", CultureInfo.InvariantCulture)))},";
                         break;
                     case TicksModeEnum.Auto:
                         break;
@@ -246,15 +266,16 @@ public class TikzAxis : TikzGroupElementBase, ITikzGroupElement
         }
     }
 
-    public override string PostTag
-    {
-        get { return @"\end{axis}"; }
-    }
+    /// <summary>
+    /// Gets the closing TikZ axis command.
+    /// </summary>
+    public override string PostTag => @"\end{axis}";
 
-    #endregion
-
-    #region Implementation of ITikzGroupElement
-
+    /// <summary>
+    /// Binds the axis to a plot cube.
+    /// </summary>
+    /// <param name="group">The plot cube group.</param>
+    /// <param name="globals">The shared globals.</param>
     public override void Bind(Group group, TikzGlobals globals)
     {
         this.globals = globals;
@@ -290,7 +311,7 @@ public class TikzAxis : TikzGroupElementBase, ITikzGroupElement
         XMinorTicks = false;
         XMajorGrid = plotCube.Axes.XAxis.GridMajor.Visible;
         XMinorGrid = plotCube.Axes.XAxis.GridMinor.Visible;
-            
+
         // YAxis
         YLabel = plotCube.Axes.YAxis.Label.Text;
         YScale = plotCube.ScaleModes.YAxisScale;
@@ -306,7 +327,7 @@ public class TikzAxis : TikzGroupElementBase, ITikzGroupElement
         YMinorTicks = false;
         YMajorGrid = plotCube.Axes.YAxis.GridMajor.Visible;
         YMinorGrid = plotCube.Axes.YAxis.GridMinor.Visible;
-            
+
         // ZAxis
         ZLabel = plotCube.Axes.ZAxis.Label.Text;
         ZScale = plotCube.ScaleModes.ZAxisScale;
@@ -328,6 +349,7 @@ public class TikzAxis : TikzGroupElementBase, ITikzGroupElement
         globals.Colors.Add(MajorGridColor);
         MajorGridStyle = plotCube.Axes.XAxis.GridMajor.DashStyle;
         MajorGridWidth = plotCube.Axes.XAxis.GridMajor.Width;
+
         // Push style to PGFPlotOptions (NOTE: grid style is set globally)
         globals.PGFPlotOptions.SetMajorGridStyle(MajorGridColor, MajorGridStyle, MajorGridWidth);
 
@@ -336,6 +358,7 @@ public class TikzAxis : TikzGroupElementBase, ITikzGroupElement
         globals.Colors.Add(MinorGridColor);
         MinorGridStyle = plotCube.Axes.XAxis.GridMinor.DashStyle;
         MinorGridWidth = plotCube.Axes.XAxis.GridMinor.Width;
+
         // Push style to PGFPlotOptions (NOTE: grid style is set globally)
         globals.PGFPlotOptions.SetMinorGridStyle(MinorGridColor, MinorGridStyle, MinorGridWidth);
 
@@ -361,176 +384,339 @@ public class TikzAxis : TikzGroupElementBase, ITikzGroupElement
 
     #region Global
 
+    /// <summary>
+    /// Gets or sets the axis title.
+    /// </summary>
     public string Title { get; set; }
 
+    /// <summary>
+    /// Gets or sets the azimuth view angle.
+    /// </summary>
     public float ViewAzimuth { get; set; }
 
+    /// <summary>
+    /// Gets or sets the elevation view angle.
+    /// </summary>
     public float ViewElevation { get; set; }
 
+    /// <summary>
+    /// Gets or sets a value indicating whether the plot is 2D.
+    /// </summary>
     public bool TwoDMode { get; set; }
 
+    /// <summary>
+    /// Sets the tick alignment for all axes.
+    /// </summary>
     public TicksAlignEnum TicksAlign
     {
-        set { XTicksAlign = YTicksAlign = ZTicksAlign = value; }
+        set => XTicksAlign = YTicksAlign = ZTicksAlign = value;
     }
 
+    /// <summary>
+    /// Enables or disables major ticks for all axes.
+    /// </summary>
     public bool MajorTicks
     {
-        set { XMajorTicks = YMajorTicks = ZMajorTicks = value; }
+        set => XMajorTicks = YMajorTicks = ZMajorTicks = value;
     }
 
+    /// <summary>
+    /// Enables or disables minor ticks for all axes.
+    /// </summary>
     public bool MinorTicks
     {
-        set { XMinorTicks = YMinorTicks = ZMinorTicks = value; }
+        set => XMinorTicks = YMinorTicks = ZMinorTicks = value;
     }
 
+    /// <summary>
+    /// Enables or disables major and minor grids for all axes.
+    /// </summary>
     public bool Grid
     {
-        set { XMajorGrid = MinorGrid = value; }
+        set
+        {
+            XMajorGrid = YMajorGrid = ZMajorGrid = value;
+            XMinorGrid = YMinorGrid = ZMinorGrid = value;
+        }
     }
 
+    /// <summary>
+    /// Enables or disables major grids for all axes.
+    /// </summary>
     public bool MajorGrid
     {
-        set { XMajorGrid = YMajorGrid = ZMajorGrid = value; }
+        set => XMajorGrid = YMajorGrid = ZMajorGrid = value;
     }
 
+    /// <summary>
+    /// Enables or disables minor grids for all axes.
+    /// </summary>
     public bool MinorGrid
     {
-        set { XMinorGrid = YMinorGrid = ZMinorGrid = value; }
+        set => XMinorGrid = YMinorGrid = ZMinorGrid = value;
     }
 
     #endregion
 
     #region XAxis
 
+    /// <summary>
+    /// Gets or sets the X-axis label.
+    /// </summary>
     public string XLabel { get; set; }
 
+    /// <summary>
+    /// Gets or sets the X-axis scale type.
+    /// </summary>
     public AxisScale XScale { get; set; }
 
+    /// <summary>
+    /// Gets or sets the X-axis minimum value.
+    /// </summary>
     public float XMin { get; set; }
 
+    /// <summary>
+    /// Gets or sets the X-axis maximum value.
+    /// </summary>
     public float XMax { get; set; }
 
+    /// <summary>
+    /// Gets or sets the X-axis tick generation mode.
+    /// </summary>
     public TicksModeEnum XTicksMode { get; set; }
 
+    /// <summary>
+    /// Gets or sets custom X-axis tick positions.
+    /// </summary>
     public float[] XTicks
     {
-        get { return xTicks; }
+        get => xTicks;
         set
         {
             xTicks = value;
-            XTicksMode = TicksModeEnum.Coordinate;
+            XTicksMode = TicksModeEnum.Custom;
         }
     }
 
+    /// <summary>
+    /// Gets or sets the X-axis tick alignment.
+    /// </summary>
     public TicksAlignEnum XTicksAlign { get; set; }
 
+    /// <summary>
+    /// Gets or sets a value indicating whether major X-axis ticks are visible.
+    /// </summary>
     public bool XMajorTicks { get; set; }
 
+    /// <summary>
+    /// Gets or sets a value indicating whether minor X-axis ticks are visible.
+    /// </summary>
     public bool XMinorTicks { get; set; }
 
+    /// <summary>
+    /// Gets or sets a value indicating whether major X-axis grid lines are visible.
+    /// </summary>
     public bool XMajorGrid { get; set; }
 
+    /// <summary>
+    /// Gets or sets a value indicating whether minor X-axis grid lines are visible.
+    /// </summary>
     public bool XMinorGrid { get; set; }
 
     #endregion
 
     #region YAxis
 
+    /// <summary>
+    /// Gets or sets the Y-axis label.
+    /// </summary>
     public string YLabel { get; set; }
 
+    /// <summary>
+    /// Gets or sets the Y-axis scale type.
+    /// </summary>
     public AxisScale YScale { get; set; }
 
+    /// <summary>
+    /// Gets or sets the Y-axis minimum value.
+    /// </summary>
     public float YMin { get; set; }
 
+    /// <summary>
+    /// Gets or sets the Y-axis maximum value.
+    /// </summary>
     public float YMax { get; set; }
 
+    /// <summary>
+    /// Gets or sets the Y-axis tick generation mode.
+    /// </summary>
     public TicksModeEnum YTicksMode { get; set; }
 
+    /// <summary>
+    /// Gets or sets custom Y-axis tick positions.
+    /// </summary>
     public float[] YTicks
     {
-        get { return yTicks; }
+        get => yTicks;
         set
         {
             yTicks = value;
-            YTicksMode = TicksModeEnum.Coordinate;
+            YTicksMode = TicksModeEnum.Custom;
         }
     }
 
+    /// <summary>
+    /// Gets or sets the Y-axis tick alignment.
+    /// </summary>
     public TicksAlignEnum YTicksAlign { get; set; }
 
+    /// <summary>
+    /// Gets or sets a value indicating whether major Y-axis ticks are visible.
+    /// </summary>
     public bool YMajorTicks { get; set; }
 
+    /// <summary>
+    /// Gets or sets a value indicating whether minor Y-axis ticks are visible.
+    /// </summary>
     public bool YMinorTicks { get; set; }
 
+    /// <summary>
+    /// Gets or sets a value indicating whether major Y-axis grid lines are visible.
+    /// </summary>
     public bool YMajorGrid { get; set; }
 
+    /// <summary>
+    /// Gets or sets a value indicating whether minor Y-axis grid lines are visible.
+    /// </summary>
     public bool YMinorGrid { get; set; }
 
     #endregion
 
     #region ZAxis
 
+    /// <summary>
+    /// Gets or sets the Z-axis label.
+    /// </summary>
     public string ZLabel { get; set; }
 
+    /// <summary>
+    /// Gets or sets the Z-axis scale type.
+    /// </summary>
     public AxisScale ZScale { get; set; }
 
+    /// <summary>
+    /// Gets or sets the Z-axis minimum value.
+    /// </summary>
     public float ZMin { get; set; }
 
+    /// <summary>
+    /// Gets or sets the Z-axis maximum value.
+    /// </summary>
     public float ZMax { get; set; }
 
+    /// <summary>
+    /// Gets or sets the Z-axis tick generation mode.
+    /// </summary>
     public TicksModeEnum ZTicksMode { get; set; }
 
+    /// <summary>
+    /// Gets or sets custom Z-axis tick positions.
+    /// </summary>
     public float[] ZTicks
     {
-        get { return zTicks; }
+        get => zTicks;
         set
         {
             zTicks = value;
-            ZTicksMode = TicksModeEnum.Coordinate;
+            ZTicksMode = TicksModeEnum.Custom;
         }
     }
 
+    /// <summary>
+    /// Gets or sets the Z-axis tick alignment.
+    /// </summary>
     public TicksAlignEnum ZTicksAlign { get; set; }
 
+    /// <summary>
+    /// Gets or sets a value indicating whether major Z-axis ticks are visible.
+    /// </summary>
     public bool ZMajorTicks { get; set; }
 
+    /// <summary>
+    /// Gets or sets a value indicating whether minor Z-axis ticks are visible.
+    /// </summary>
     public bool ZMinorTicks { get; set; }
 
+    /// <summary>
+    /// Gets or sets a value indicating whether major Z-axis grid lines are visible.
+    /// </summary>
     public bool ZMajorGrid { get; set; }
 
+    /// <summary>
+    /// Gets or sets a value indicating whether minor Z-axis grid lines are visible.
+    /// </summary>
     public bool ZMinorGrid { get; set; }
 
     #endregion
 
     #region MajorGrid
 
+    /// <summary>
+    /// Gets or sets the major grid line color.
+    /// </summary>
     public Color MajorGridColor { get; set; }
 
+    /// <summary>
+    /// Gets or sets the major grid line style.
+    /// </summary>
     public DashStyle MajorGridStyle { get; set; }
 
+    /// <summary>
+    /// Gets or sets the major grid line width.
+    /// </summary>
     public int MajorGridWidth { get; set; }
 
     #endregion
 
     #region MinorGrid
 
+    /// <summary>
+    /// Gets or sets the minor grid line color.
+    /// </summary>
     public Color MinorGridColor { get; set; }
 
+    /// <summary>
+    /// Gets or sets the minor grid line style.
+    /// </summary>
     public DashStyle MinorGridStyle { get; set; }
 
+    /// <summary>
+    /// Gets or sets the minor grid line width.
+    /// </summary>
     public int MinorGridWidth { get; set; }
 
     #endregion
 
     #region Legend
 
+    /// <summary>
+    /// Gets or sets a value indicating whether the legend is visible.
+    /// </summary>
     public bool LegendVisible { get; set; }
 
+    /// <summary>
+    /// Gets or sets the legend location.
+    /// </summary>
     public PointF LegendLocation { get; set; }
 
+    /// <summary>
+    /// Gets or sets the legend border color.
+    /// </summary>
     public Color LegendBorderColor { get; set; }
 
+    /// <summary>
+    /// Gets or sets the legend background color.
+    /// </summary>
     public Color LegendBackgroundColor { get; set; }
 
     #endregion
@@ -542,28 +728,12 @@ public class TikzAxis : TikzGroupElementBase, ITikzGroupElement
     #region Legend
 
     private string FormatTikzLegendStyle
-    {
-        get
-        {
-            return FormattableString.Invariant($"  legend style={{legend cell align=left,align=left,{FormatTikzLegendColors},{FormatTikzLegendLocation}}},");
-        }
-    }
+        => FormattableString.Invariant($"  legend style={{legend cell align=left,align=left,{FormatTikzLegendColors},{FormatTikzLegendLocation}}},");
 
     private string FormatTikzLegendColors
-    {
-        get
-        {
-            return FormattableString.Invariant($"fill={globals.Colors.GetColorName(LegendBackgroundColor)},draw={globals.Colors.GetColorName(LegendBorderColor)}");
-        }
-    }
+        => FormattableString.Invariant($"fill={globals.Colors.GetColorName(LegendBackgroundColor)},draw={globals.Colors.GetColorName(LegendBorderColor)}");
 
-    private string FormatTikzLegendLocation
-    {
-        get
-        {
-            return FormattableString.Invariant($"at={{({LegendLocation.X},{1f-LegendLocation.Y})}}");
-        }
-    }
+    private string FormatTikzLegendLocation => FormattableString.Invariant($"at={{({LegendLocation.X},{1f - LegendLocation.Y})}}");
 
     #endregion
 

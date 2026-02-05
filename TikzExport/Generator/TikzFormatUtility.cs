@@ -5,19 +5,30 @@ using ILNumerics.Drawing;
 
 namespace ILNumerics.Community.TikzExport.Generator;
 
+/// <summary>
+/// Provides formatting helpers for TikZ line, marker, and error bar styles.
+/// </summary>
 public static class TikzFormatUtility
 {
+    #region ErrorBar
+
+    internal static string FormatErrorBars(TikzGlobals globals, Color color, DashStyle style, int width)
+    {
+        var errorBarDef = "error bars/.cd, y fixed,y dir=both, y explicit";
+        var errorBarStyle = FormatLine(globals, color, style, width);
+
+        return $"{errorBarDef},error bar style={{{errorBarStyle}}}";
+    }
+
+    #endregion
+
     #region Line
 
     internal static string FormatLine(TikzGlobals globals, Color color, DashStyle style, float width)
-    {
-        return FormattableString.Invariant($"color={globals.Colors.GetColorName(color)},{FormatDashStyle(style)},line width={width:F1}pt");
-    }
+        => FormattableString.Invariant($"color={globals.Colors.GetColorName(color)},{FormatDashStyle(style)},line width={width:F1}pt");
 
     internal static string FormatLine(TikzGlobals globals, Color color, DashStyle style, int width)
-    {
-        return FormattableString.Invariant($"color={globals.Colors.GetColorName(color)},{FormatDashStyle(style)},line width={width}pt");
-    }
+        => FormattableString.Invariant($"color={globals.Colors.GetColorName(color)},{FormatDashStyle(style)},line width={width}pt");
 
     internal static string FormatDashStyle(DashStyle style)
     {
@@ -79,18 +90,6 @@ public static class TikzFormatUtility
             default:
                 return "plus";
         }
-    }
-
-    #endregion
-
-    #region ErrorBar
-
-    internal static string FormatErrorBars(TikzGlobals globals, Color color, DashStyle style, int width)
-    {
-        var errorBarDef = "error bars/.cd, y fixed,y dir=both, y explicit";
-        var errorBarStyle = FormatLine(globals, color, style, width);
-
-        return $"{errorBarDef},error bar style={{{errorBarStyle}}}";
     }
 
     #endregion

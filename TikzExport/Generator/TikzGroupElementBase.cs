@@ -6,10 +6,72 @@ using ILNumerics.Drawing;
 
 namespace ILNumerics.Community.TikzExport.Generator;
 
+/// <summary>
+/// Base class for TikZ elements that contain child elements.
+/// </summary>
 public abstract class TikzGroupElementBase : ITikzElement, ICollection<ITikzElement>, ITikzGroupElement
 {
-    private readonly List<ITikzElement> _children = new List<ITikzElement>();
-        
+    private readonly List<ITikzElement> _children = new();
+
+    #region Implementation of ICollection<ITikzElement>
+
+    public IEnumerator<ITikzElement> GetEnumerator() => _children.GetEnumerator();
+
+    IEnumerator IEnumerable.GetEnumerator() => ((IEnumerable) _children).GetEnumerator();
+
+    /// <summary>
+    /// Adds a child element.
+    /// </summary>
+    /// <param name="item">The element to add.</param>
+    public void Add(ITikzElement item)
+    {
+        _children.Add(item);
+    }
+
+    /// <summary>
+    /// Removes all child elements.
+    /// </summary>
+    public void Clear()
+    {
+        _children.Clear();
+    }
+
+    /// <summary>
+    /// Determines whether the specified element exists in the collection.
+    /// </summary>
+    /// <param name="item">The element to locate.</param>
+    /// <returns><c>true</c> when the element exists; otherwise, <c>false</c>.</returns>
+    public bool Contains(ITikzElement item) => _children.Contains(item);
+
+    /// <summary>
+    /// Copies the child elements to an array.
+    /// </summary>
+    /// <param name="array">The target array.</param>
+    /// <param name="arrayIndex">The starting index.</param>
+    public void CopyTo(ITikzElement[] array, int arrayIndex)
+    {
+        _children.CopyTo(array, arrayIndex);
+    }
+
+    /// <summary>
+    /// Removes the specified element from the collection.
+    /// </summary>
+    /// <param name="item">The element to remove.</param>
+    /// <returns><c>true</c> when the element was removed; otherwise, <c>false</c>.</returns>
+    public bool Remove(ITikzElement item) => _children.Remove(item);
+
+    /// <summary>
+    /// Gets the number of child elements.
+    /// </summary>
+    public int Count => _children.Count;
+
+    /// <summary>
+    /// Gets a value indicating whether the collection is read-only.
+    /// </summary>
+    public bool IsReadOnly => false;
+
+    #endregion
+
     #region Implementation of ITikzElement
 
     public abstract string PreTag { get; }
@@ -48,59 +110,6 @@ public abstract class TikzGroupElementBase : ITikzElement, ICollection<ITikzElem
     #region Implementation of ITikzGroupElement
 
     public abstract void Bind(Group group, TikzGlobals globals);
-
-    #endregion
-
-    #region Implementation of IEnumerable
-
-    public IEnumerator<ITikzElement> GetEnumerator()
-    {
-        return _children.GetEnumerator();
-    }
-
-    IEnumerator IEnumerable.GetEnumerator()
-    {
-        return ((IEnumerable) _children).GetEnumerator();
-    }
-
-    #endregion
-
-    #region Implementation of ICollection<ITikzElement>
-
-    public void Add(ITikzElement item)
-    {
-        _children.Add(item);
-    }
-
-    public void Clear()
-    {
-        _children.Clear();
-    }
-
-    public bool Contains(ITikzElement item)
-    {
-        return _children.Contains(item);
-    }
-
-    public void CopyTo(ITikzElement[] array, int arrayIndex)
-    {
-        _children.CopyTo(array, arrayIndex);
-    }
-
-    public bool Remove(ITikzElement item)
-    {
-        return _children.Remove(item);
-    }
-
-    public int Count
-    {
-        get { return _children.Count; }
-    }
-
-    public bool IsReadOnly
-    {
-        get { return false; }
-    }
 
     #endregion
 }
