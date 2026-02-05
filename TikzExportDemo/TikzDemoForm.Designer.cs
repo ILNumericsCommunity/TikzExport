@@ -5,7 +5,7 @@
         /// <summary>
         /// Required designer variable.
         /// </summary>
-        private System.ComponentModel.IContainer components = null;
+        private System.ComponentModel.IContainer? components = null;
 
         /// <summary>
         /// Clean up any resources being used.
@@ -170,13 +170,13 @@
 
         #endregion
 
-        private System.Windows.Forms.SplitContainer splitContainer;
-        private System.Windows.Forms.Button btnExportFile;
-        private System.Windows.Forms.SplitContainer splitContainer1;
-        private ILNumerics.Drawing.Panel ilPanel;
-        private System.Windows.Forms.TextBox textBoxTikz;
-        private System.Windows.Forms.Button btnExportText;
-        private System.Windows.Forms.ComboBox comboBoxScene;
+        private System.Windows.Forms.SplitContainer? splitContainer;
+        private System.Windows.Forms.Button? btnExportFile;
+        private System.Windows.Forms.SplitContainer? splitContainer1;
+        private ILNumerics.Drawing.Panel? ilPanel;
+        private System.Windows.Forms.TextBox? textBoxTikz;
+        private System.Windows.Forms.Button? btnExportText;
+        private System.Windows.Forms.ComboBox? comboBoxScene;
     }
 }
 

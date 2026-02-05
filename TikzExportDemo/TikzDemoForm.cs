@@ -30,16 +30,25 @@ public partial class TikzDemoForm : Form
     {
         InitializeComponent();
 
+        if (comboBoxScene == null)
+            return;
+
         comboBoxScene.DataSource = Enum.GetValues(typeof(PlotVariants));
     }
 
-    private void TikzDemoForm_Load(object sender, EventArgs e)
+    private void TikzDemoForm_Load(object? sender, EventArgs e)
     {
+        if (comboBoxScene == null)
+            return;
+
         comboBoxScene.SelectedIndex = 0;
     }
 
-    private void comboBoxScene_SelectedIndexChanged(object sender, EventArgs e)
+    private void comboBoxScene_SelectedIndexChanged(object? sender, EventArgs e)
     {
+        if (comboBoxScene == null || ilPanel == null)
+            return;
+
         if (comboBoxScene.SelectedIndex == -1)
             return;
 
@@ -148,9 +157,12 @@ public partial class TikzDemoForm : Form
         ilPanel.Refresh();
     }
 
-    private void btnExportFile_Click(object sender, EventArgs e)
+    private void btnExportFile_Click(object? sender, EventArgs e)
     {
-        var saveFileDialog = new SaveFileDialog();
+        if (ilPanel == null)
+            return;
+
+        using var saveFileDialog = new SaveFileDialog();
         saveFileDialog.Filter = "TIKZ Image|*.tikz";
         saveFileDialog.Title = "Save as TIKZ Image";
         saveFileDialog.ShowDialog();
@@ -160,12 +172,21 @@ public partial class TikzDemoForm : Form
 
         var size = new Size(120, 120);
         var currentScene = ilPanel.GetCurrentScene() ?? ilPanel.Scene;
+        if (currentScene == null)
+            return;
+
         TikzExport.ExportFile(currentScene, saveFileDialog.FileName, size);
     }
 
-    private void btnExportText_Click(object sender, EventArgs e)
+    private void btnExportText_Click(object? sender, EventArgs e)
     {
+        if (ilPanel == null || textBoxTikz == null)
+            return;
+
         var currentScene = ilPanel.GetCurrentScene() ?? ilPanel.Scene;
+        if (currentScene == null)
+            return;
+
         textBoxTikz.Text = TikzExport.ExportString(currentScene);
     }
 }

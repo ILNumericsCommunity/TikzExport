@@ -53,7 +53,7 @@ public static class TikzBinderExtensions
     /// <param name="tikzGroup">The target group element.</param>
     /// <param name="node">The node to bind.</param>
     /// <param name="globals">The shared globals.</param>
-    public static void BindElement<TTikz>(this ITikzGroupElement tikzGroup, Node node, TikzGlobals globals)
+    public static void BindElement<TTikz>(this ITikzGroupElement tikzGroup, Node? node, TikzGlobals globals)
         where TTikz : ITikzElement, new()
     {
         if (node == null)
@@ -72,7 +72,7 @@ public static class TikzBinderExtensions
     /// <param name="tikzGroup">The parent group element.</param>
     /// <param name="group">The group to bind.</param>
     /// <param name="globals">The shared globals.</param>
-    public static void BindGroup<TTikzGroup>(this ITikzGroupElement tikzGroup, Group group, TikzGlobals globals)
+    public static void BindGroup<TTikzGroup>(this ITikzGroupElement tikzGroup, Group? group, TikzGlobals globals)
         where TTikzGroup : ITikzGroupElement, new()
     {
         if (group == null)

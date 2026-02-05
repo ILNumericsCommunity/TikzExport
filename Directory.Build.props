@@ -15,9 +15,9 @@
 	<Target Name="Versioning" AfterTargets="MinVer">
 		<PropertyGroup>
 			<BuildNumber>$([System.DateTime]::UtcNow.Subtract($([System.DateTime]::Parse("2026/01/01"))).TotalDays.ToString("0"))</BuildNumber>
-			<Version>$(MinVerMajor).$(MinVerMinor).$(MinVerPatch).$(BuildNumber)-dev+$(GitSHA)</Version>
+      <Version>$(MinVerMajor).$(MinVerMinor).$(MinVerPatch).$(BuildNumber)-dev+$(GitSHA)</Version>
       <Version Condition=" '$(Configuration)' == 'Release' ">$(MinVerMajor).$(MinVerMinor).$(MinVerPatch).$(BuildNumber)</Version>
-			<PackageVersion>$(Version)</PackageVersion>
+      <PackageVersion>$(Version)</PackageVersion>
 		</PropertyGroup>
 		<Message Text="Version: $(Version)" Importance="high"/>
 		<Message Text="FileVersion: $(FileVersion)" Importance="high"/>

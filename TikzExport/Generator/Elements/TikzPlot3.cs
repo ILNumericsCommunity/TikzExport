@@ -11,7 +11,7 @@ namespace ILNumerics.Community.TikzExport.Generator.Elements;
 /// </summary>
 public class TikzPlot3 : ITikzElement
 {
-    private Group surface;
+    private Group? surface;
 
     #region Implementation of ITikzElement
 
