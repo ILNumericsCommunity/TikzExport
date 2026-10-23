@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using ILNumerics.Community.TikzExport.Generator.Global;
 using ILNumerics.Drawing;
 

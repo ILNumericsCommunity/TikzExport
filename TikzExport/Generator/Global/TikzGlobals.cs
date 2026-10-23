@@ -1,10 +1,16 @@
-﻿namespace ILNumerics.Community.TikzExport.Generator.Global;
+using System.Collections.Generic;
+
+namespace ILNumerics.Community.TikzExport.Generator.Global;
 
 /// <summary>
 /// Holds global export settings and shared resources.
 /// </summary>
 public sealed class TikzGlobals
 {
+    internal readonly List<ExportIssue> Issues = new();
+    internal int PlotCubeIndex;
+
+    /// <summary>Initializes independent color, grid, and diagnostic collections for one export.</summary>
     public TikzGlobals()
     {
         CanvasSize = new System.Drawing.Size(100, 100);

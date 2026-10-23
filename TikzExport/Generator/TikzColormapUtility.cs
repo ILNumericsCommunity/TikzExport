@@ -1,57 +1,21 @@
-﻿using System.Text;
-using ILNumerics.Drawing;
+using System;
+using System.Text;
 
 namespace ILNumerics.Community.TikzExport.Generator;
 
-/// <summary>
-/// Provides helpers for mapping ILNumerics colormaps to PGFPlots colormaps.
-/// </summary>
+/// <summary>Converts the actual ILNumerics palette to a plot-local PGFPlots palette.</summary>
 public static class TikzColormapUtility
 {
-    #region Colormap
-
+    /// <summary>Samples a native color map into a deterministic PGFPlots color-map definition.</summary>
     internal static string FormatColormap(Colormap colormap)
     {
-        switch (colormap.Type)
+        var builder = new StringBuilder("colormap={ilnumerics}{");
+        for (var i = 0; i <= 64; i++)
         {
-            case Colormaps.Bone:
-                return "colormap/hot2";
-            case Colormaps.Cool:
-                return "colormap/cool";
-            case Colormaps.Gray:
-                return "colormap/blackwhite";
-            case Colormaps.Hot:
-                return "colormap/hot";
-            case Colormaps.ILNumerics:
-                return "colormap/viridis";
-            case Colormaps.Jet:
-                return "colormap/jet";
-            case Colormaps.Pink:
-                return "colormap/violet";
-            case Colormaps.Spring:
-                return "colormap/greenyellow";
-            case Colormaps.Custom:
-            default:
-                return CustomColormap(colormap);
+            var c = colormap.Map(i / 64f, Tuple.Create(0f, 1f));
+            builder.Append(FormattableString.Invariant($"rgb({i}pt)=({c.X:R},{c.Y:R},{c.Z:R}); "));
         }
+
+        return builder.Append('}').ToString();
     }
-
-    private static string CustomColormap(Colormap colormap)
-    {
-        var builder = new StringBuilder("colormap={custom}{");
-        for (var i = 0; i < colormap.Length; i++)
-        {
-            var position = (int) (100.0 * colormap.Data.GetValue(i, 0));
-            var red = (int) (255.0 * colormap.Data.GetValue(i, 1));
-            var green = (int) (255.0 * colormap.Data.GetValue(i, 2));
-            var blue = (int) (255.0 * colormap.Data.GetValue(i, 3));
-
-            builder.Append($"{(i == 0 ? "" : " ")}rgb255({position}cm)=({red},{green},{blue})");
-        }
-        builder.Append("}");
-
-        return builder.ToString();
-    }
-
-    #endregion
 }

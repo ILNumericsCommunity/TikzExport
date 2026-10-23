@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using ILNumerics.Community.TikzExport.Generator;
 using ILNumerics.Community.TikzExport.Generator.Elements;
@@ -11,6 +11,7 @@ namespace ILNumerics.Community.TikzExport;
 /// Provides methods to export an ILNumerics <see cref="Scene" /> to PGF/TikZ (https://en.wikipedia.org/wiki/PGF/TikZ).
 /// </summary>
 /// <remarks>
+/// Invoke on the scene-owning thread with no concurrent mutation. The scene remains caller-owned and unchanged.
 /// PGF/TikZ is a pair of languages for producing vector graphics (for example, technical illustrations and drawings)
 /// from a geometric or algebraic description. PGF is a lower-level language, while TikZ is a set of higher-level
 /// macros built on PGF. (Wikipedia)
@@ -20,17 +21,28 @@ namespace ILNumerics.Community.TikzExport;
 /// </remarks>
 public static class TikzExport
 {
+    /// <summary>Exports existing scene geometry and reports unsupported content. Call on the scene-owning thread.</summary>
+    /// <param name="scene">Caller-owned scene to snapshot.</param>
+    /// <param name="canvasSize">Canvas dimensions in millimeters; zero dimensions select the default size.</param>
+    /// <returns>TikZ markup and conversion diagnostics. Unexpected failures propagate.</returns>
+    public static ExportResult ExportWithReport(Scene scene, System.Drawing.Size canvasSize = default)
+    {
+        var picture = Bind(scene, canvasSize);
+        using var writer = new StringWriter();
+        new TikzWriter(writer).Write(picture);
+        return new ExportResult(writer.ToString(), picture.Issues);
+    }
+
     /// <summary>
     /// Exports the given ILNumerics <see cref="Scene" /> to an PGF/TikZ string.
     /// </summary>
     /// <param name="scene">ILNumerics <see cref="Scene" /> to convert. Must not be <c>null</c>.</param>
     /// <param name="canvasSize">Optional canvas size to use for the generated TikZ picture.</param>
     /// <remarks>
-    /// When the scene contains no supported plots, the file is created but left empty.
+    /// When the scene contains no supported plots, a visible placeholder is exported.
     /// </remarks>
     /// <returns>
-    /// A string containing the PGF/TikZ fragment. Returns an empty string when the scene
-    /// contains no supported plots.
+    /// A string containing the PGF/TikZ fragment. Includes a placeholder when no plots can be converted.
     /// </returns>
     /// <exception cref="ArgumentNullException"><paramref name="scene" /> is <c>null</c>.</exception>
     public static string ExportString(Scene scene, System.Drawing.Size canvasSize = default)
@@ -53,7 +65,7 @@ public static class TikzExport
     /// <param name="filePath">The path of the file to write the exported TikZ markup to.</param>
     /// <param name="canvasSize">Optional canvas size to use for the generated TikZ picture.</param>
     /// <remarks>
-    /// When the scene contains no supported plots, no output is written.
+    /// When the scene contains no supported plots, a visible placeholder is exported.
     /// </remarks>
     /// <exception cref="ArgumentNullException"><paramref name="scene" /> is <c>null</c>.</exception>
     public static void ExportFile(Scene scene, string filePath, System.Drawing.Size canvasSize = default)
@@ -100,7 +112,8 @@ public static class TikzExport
     /// <param name="canvasSize">Optional canvas size to use for the generated TikZ picture.</param>
     /// <returns>
     /// A <see cref="TikzPicture" /> instance that is bound to <paramref name="scene" />. The
-    /// returned picture is empty when the scene contains no supported plots.
+    /// returned picture contains a visible placeholder when no plots can be converted.
+    /// Binding snapshots the output; subsequent scene changes do not affect the picture.
     /// </returns>
     /// <exception cref="ArgumentNullException"><paramref name="scene" /> is <c>null</c>.</exception>
     public static TikzPicture Bind(Scene scene, System.Drawing.Size canvasSize = default)
@@ -108,7 +121,7 @@ public static class TikzExport
         if (scene == null)
             throw new ArgumentNullException(nameof(scene));
 
-        scene.Configure();
+        // Read existing geometry without render-time configuration or mutation.
 
         var tikzPicture = new TikzPicture(canvasSize);
         tikzPicture.Bind(scene, new TikzGlobals());

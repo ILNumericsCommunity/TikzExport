@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using ILNumerics.Community.TikzExport.Generator.Global;
@@ -13,6 +13,7 @@ public class TikzPicture : TikzGroupElementBase
 {
     private TikzGlobals? _globals;
     private bool _hasContent;
+    private bool _hasData;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="TikzPicture" /> class.
@@ -20,6 +21,8 @@ public class TikzPicture : TikzGroupElementBase
     /// <param name="canvasSize">Optional canvas size to use for the generated TikZ picture.</param>
     public TikzPicture(System.Drawing.Size canvasSize = default)
     {
+        if (canvasSize.Width < 0 || canvasSize.Height < 0)
+            throw new ArgumentOutOfRangeException(nameof(canvasSize));
         if (canvasSize.Width == 0 || canvasSize.Height == 0)
             canvasSize = new System.Drawing.Size(100, 100); // Default size
 
@@ -51,10 +54,6 @@ public class TikzPicture : TikzGroupElementBase
 
             yield return @"\begin{tikzpicture}";
 
-            // PGFPlots Options
-            foreach (var pgfPlotsOption in globals.PGFPlotOptions.Content)
-                yield return pgfPlotsOption;
-
             // Child Elements
             foreach (var contentLine in base.Content)
                 yield return contentLine;
@@ -62,9 +61,12 @@ public class TikzPicture : TikzGroupElementBase
     }
 
     /// <summary>
-    /// Gets a value indicating whether this picture has any exportable content.
+    /// Gets conversion limitations encountered while binding.
     /// </summary>
-    public bool IsEmpty => !_hasContent;
+    public IReadOnlyList<ExportIssue> Issues => _globals?.Issues.AsReadOnly() ?? (IReadOnlyList<ExportIssue>) Array.Empty<ExportIssue>();
+
+    /// <summary>True when no plot data was converted; the output still contains a placeholder.</summary>
+    public bool IsEmpty => !_hasData;
 
     /// <summary>
     /// Gets the closing TikZ picture command.
@@ -83,26 +85,45 @@ public class TikzPicture : TikzGroupElementBase
     /// <param name="globals">The shared globals.</param>
     public override void Bind(Group group, TikzGlobals globals)
     {
+        Clear();
         _globals = globals;
+        globals.Issues.Clear();
         globals.CanvasSize = CanvasSize;
-
-        var scene = group as Scene;
-        if (scene == null)
-            return;
-
-        var plotCube = scene.First<PlotCube>();
-        if (plotCube == null)
+        _hasData = false;
+        _hasContent = true; // Even empty scenes produce a visible placeholder.
+        var cubes = group.Find<PlotCube>().Where(c => Visible(c)).ToArray();
+        for (var i = 0; i < cubes.Length; i++)
         {
-            _hasContent = false;
-            return;
+            globals.PlotCubeIndex = i;
+            var axis = new TikzAxis();
+            axis.Bind(cubes[i], globals);
+
+            // Snapshot each axis before the next cube changes its grid/colormap settings.
+            var lines = new List<string> { $"\\begin{{scope}}[yshift={-i * (CanvasSize.Height + 25)}mm]" };
+            lines.AddRange(globals.PGFPlotOptions.Content);
+            lines.Add(axis.PreTag);
+            lines.AddRange(axis.Content);
+            lines.Add(axis.PostTag);
+            _hasData |= lines.Any(line => line.StartsWith(@"\addplot", StringComparison.Ordinal));
+            lines.Add(@"\end{scope}");
+            Add(new TikzLiteral(lines));
         }
 
-        _hasContent = plotCube.Find<ErrorBarPlot>().Any() || plotCube.Find<LinePlot>().Any() || plotCube.Find<Surface>().Any() || plotCube.Find<FastSurface>().Any();
+        if (cubes.Length == 0)
+        {
+            globals.Issues.Add(new ExportIssue(-1, group.GetType().Name, "No visible plot cube could be exported."));
+            Add(new TikzLiteral(new[] { @"\node[draw,align=center] {No exportable plot data};" }));
+        }
+    }
 
-        if (!_hasContent)
-            return;
-
-        // NOTE: Only PlotCube is supported for now
-        this.BindGroup<TikzAxis>(plotCube, globals);
+    /// <summary>Checks visibility through all ancestor nodes.</summary>
+    private static bool Visible(Node node)
+    {
+        for (var n = node; n != null; n = n.Parent)
+        {
+            if (!n.Visible)
+                return false;
+        }
+        return true;
     }
 }

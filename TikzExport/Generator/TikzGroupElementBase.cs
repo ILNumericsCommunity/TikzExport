@@ -15,6 +15,7 @@ public abstract class TikzGroupElementBase : ITikzElement, ICollection<ITikzElem
 
     #region Implementation of ICollection<ITikzElement>
 
+    /// <inheritdoc />
     public IEnumerator<ITikzElement> GetEnumerator() => _children.GetEnumerator();
 
     IEnumerator IEnumerable.GetEnumerator() => ((IEnumerable) _children).GetEnumerator();
@@ -74,8 +75,10 @@ public abstract class TikzGroupElementBase : ITikzElement, ICollection<ITikzElem
 
     #region Implementation of ITikzElement
 
+    /// <inheritdoc />
     public abstract string PreTag { get; }
 
+    /// <inheritdoc />
     public virtual IEnumerable<string> Content
     {
         get
@@ -84,8 +87,9 @@ public abstract class TikzGroupElementBase : ITikzElement, ICollection<ITikzElem
             foreach (var element in _children)
             {
                 // Return PreTag of the nth element
-                if (!String.IsNullOrEmpty(element.PreTag))
-                    yield return element.PreTag;
+                var preTag = element.PreTag;
+                if (!String.IsNullOrEmpty(preTag))
+                    yield return preTag;
 
                 // Return content of the nth element (line-by-line)
                 foreach (var contentLine in element.Content)
@@ -98,8 +102,10 @@ public abstract class TikzGroupElementBase : ITikzElement, ICollection<ITikzElem
         }
     }
 
+    /// <inheritdoc />
     public abstract string PostTag { get; }
 
+    /// <inheritdoc />
     public virtual void Bind(Node node, TikzGlobals globals)
     {
         // Not needed for a group element
@@ -109,6 +115,7 @@ public abstract class TikzGroupElementBase : ITikzElement, ICollection<ITikzElem
 
     #region Implementation of ITikzGroupElement
 
+    /// <inheritdoc />
     public abstract void Bind(Group group, TikzGlobals globals);
 
     #endregion
