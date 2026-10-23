@@ -1,4 +1,5 @@
-﻿namespace TikzExportDemo
+#nullable enable
+namespace TikzExportDemo
 {
     partial class TikzDemoForm
     {
@@ -33,7 +34,7 @@
             this.btnExportText = new System.Windows.Forms.Button();
             this.btnExportFile = new System.Windows.Forms.Button();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
-            this.ilPanel = new ILNumerics.Drawing.Panel();
+            this.ilPanel = new ILNumerics.Drawing.Controls.WinForms.Panel();
             this.textBoxTikz = new System.Windows.Forms.TextBox();
             this.comboBoxScene = new System.Windows.Forms.ComboBox();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer)).BeginInit();
@@ -173,7 +174,7 @@
         private System.Windows.Forms.SplitContainer? splitContainer;
         private System.Windows.Forms.Button? btnExportFile;
         private System.Windows.Forms.SplitContainer? splitContainer1;
-        private ILNumerics.Drawing.Panel? ilPanel;
+        private ILNumerics.Drawing.Controls.WinForms.Panel? ilPanel;
         private System.Windows.Forms.TextBox? textBoxTikz;
         private System.Windows.Forms.Button? btnExportText;
         private System.Windows.Forms.ComboBox? comboBoxScene;

@@ -1,8 +1,9 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Globalization;
 using System.Linq;
+using ILNumerics.Community.ExportPreparation;
 using ILNumerics.Community.TikzExport.Generator.Global;
 using ILNumerics.Drawing;
 
@@ -20,8 +21,13 @@ public class TikzAxis : TikzGroupElementBase, ITikzGroupElement
     /// </summary>
     public enum TicksAlignEnum
     {
+        /// <summary>Uses the inside tick alignment option.</summary>
         Inside,
+
+        /// <summary>Uses the center tick alignment option.</summary>
         Center,
+
+        /// <summary>Uses the outside tick alignment option.</summary>
         Outside
     }
 
@@ -34,13 +40,26 @@ public class TikzAxis : TikzGroupElementBase, ITikzGroupElement
     /// </summary>
     public enum TicksModeEnum
     {
+        /// <summary>Uses the none tick generation option.</summary>
         None,
+
+        /// <summary>Uses the coordinate tick generation option.</summary>
         Coordinate,
+
+        /// <summary>Uses the custom tick generation option.</summary>
         Custom,
+
+        /// <summary>Uses the auto tick generation option.</summary>
         Auto
     }
 
     #endregion
+
+    /// <summary>Supplies a valid axis endpoint when the source bound is non-finite or invalid for a logarithmic axis.</summary>
+    private static float FiniteBound(float value, AxisScale scale, bool upper)
+        => Single.IsFinite(value) && (scale != AxisScale.Logarithmic || value > 0) ? value :
+            scale == AxisScale.Logarithmic ? upper ? 10 : 1 :
+            upper ? 1 : 0;
 
     private TikzGlobals? globals;
 
@@ -73,7 +92,7 @@ public class TikzAxis : TikzGroupElementBase, ITikzGroupElement
             if (!String.IsNullOrEmpty(Title))
                 yield return $"  title={{{TikzTextUtility.EscapeText(Title)}}},";
 
-            yield return FormattableString.Invariant($"  view={{({ViewAzimuth})}}{{({ViewElevation})}},");
+            yield return FormattableString.Invariant($"  view={{{ViewAzimuth}}}{{{ViewElevation}}},");
 
             #endregion
 
@@ -92,19 +111,19 @@ public class TikzAxis : TikzGroupElementBase, ITikzGroupElement
                 default:
                     throw new ArgumentOutOfRangeException();
             }
-            yield return FormattableString.Invariant($"  xmin={XMin},");
-            yield return FormattableString.Invariant($"  xmax={XMax},");
+            yield return FormattableString.Invariant($"  xmin={FiniteBound(XMin, XScale, false)},");
+            yield return FormattableString.Invariant($"  xmax={FiniteBound(XMax, XScale, true)},");
             switch (XTicksMode)
             {
                 case TicksModeEnum.None:
-                    //yield return @"  xticks=\empty,";
+                    yield return @"  xtick=\empty,";
                     break;
                 case TicksModeEnum.Coordinate:
-                    yield return "  xticks=data,";
+                    yield return "  xtick=data,";
                     break;
                 case TicksModeEnum.Custom:
                     if (XTicks != null)
-                        yield return $"  xticks={String.Join(",", XTicks.Select(x => x.ToString("F", CultureInfo.InvariantCulture)))},";
+                        yield return $"  xtick={{{String.Join(",", XTicks.Select(x => x.ToString("R", CultureInfo.InvariantCulture)))}}},";
                     break;
                 case TicksModeEnum.Auto:
                     break;
@@ -149,19 +168,19 @@ public class TikzAxis : TikzGroupElementBase, ITikzGroupElement
                 default:
                     throw new ArgumentOutOfRangeException();
             }
-            yield return FormattableString.Invariant($"  ymin={YMin},");
-            yield return FormattableString.Invariant($"  ymax={YMax},");
+            yield return FormattableString.Invariant($"  ymin={FiniteBound(YMin, YScale, false)},");
+            yield return FormattableString.Invariant($"  ymax={FiniteBound(YMax, YScale, true)},");
             switch (YTicksMode)
             {
                 case TicksModeEnum.None:
-                    //yield return @"  yticks=\empty,";
+                    yield return @"  ytick=\empty,";
                     break;
                 case TicksModeEnum.Coordinate:
-                    yield return "  yticks=data,";
+                    yield return "  ytick=data,";
                     break;
                 case TicksModeEnum.Custom:
                     if (YTicks != null)
-                        yield return $"  yticks={String.Join(",", YTicks.Select(x => x.ToString("F", CultureInfo.InvariantCulture)))},";
+                        yield return $"  ytick={{{String.Join(",", YTicks.Select(x => x.ToString("R", CultureInfo.InvariantCulture)))}}},";
                     break;
                 case TicksModeEnum.Auto:
                     break;
@@ -209,19 +228,19 @@ public class TikzAxis : TikzGroupElementBase, ITikzGroupElement
                         throw new ArgumentOutOfRangeException();
                 }
 
-                yield return FormattableString.Invariant($"  zmin={ZMin},");
-                yield return FormattableString.Invariant($"  zmax={ZMax},");
+                yield return FormattableString.Invariant($"  zmin={FiniteBound(ZMin, ZScale, false)},");
+                yield return FormattableString.Invariant($"  zmax={FiniteBound(ZMax, ZScale, true)},");
                 switch (ZTicksMode)
                 {
                     case TicksModeEnum.None:
-                        //yield return @"  zticks=\empty,";
+                        yield return @"  ztick=\empty,";
                         break;
                     case TicksModeEnum.Coordinate:
-                        yield return "  zticks=data,";
+                        yield return "  ztick=data,";
                         break;
                     case TicksModeEnum.Custom:
                         if (ZTicks != null)
-                            yield return $"  zticks={String.Join(",", ZTicks.Select(x => x.ToString("F", CultureInfo.InvariantCulture)))},";
+                            yield return $"  ztick={{{String.Join(",", ZTicks.Select(x => x.ToString("R", CultureInfo.InvariantCulture)))}}},";
                         break;
                     case TicksModeEnum.Auto:
                         break;
@@ -281,10 +300,20 @@ public class TikzAxis : TikzGroupElementBase, ITikzGroupElement
     /// <param name="globals">The shared globals.</param>
     public override void Bind(Group group, TikzGlobals globals)
     {
+        Clear();
+        LegendVisible = false;
+        XTicksMode = YTicksMode = ZTicksMode = TicksModeEnum.Auto;
+        xTicks = yTicks = zTicks = null;
+        ViewAzimuth = 0;
+        ViewElevation = 90;
         this.globals = globals;
 
         if (!(group is PlotCube plotCube))
             return;
+
+        using var prepared = new HeadlessPlotPreparation(plotCube);
+        plotCube = prepared.Cube;
+        this.BindPlots(plotCube, globals);
 
         // TODO: Font: Family, Size, Bold/Italic, Color
 
@@ -378,7 +407,6 @@ public class TikzAxis : TikzGroupElementBase, ITikzGroupElement
         }
 
         // Map plots (LinePlot, Surface, etc.)
-        this.BindPlots(plotCube, globals);
     }
 
     #endregion
@@ -742,6 +770,7 @@ public class TikzAxis : TikzGroupElementBase, ITikzGroupElement
 
     #endregion
 
+    /// <summary>Maps the sign of a native tick length to the corresponding axis alignment.</summary>
     private TicksAlignEnum TickLengthToTicksAlignEnum(float tickLength)
     {
         if (tickLength < 0)

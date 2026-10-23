@@ -1,6 +1,7 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net8.0-windows</TargetFramework>
+    <ILNAcceleratorEnabled>false</ILNAcceleratorEnabled>
     <Nullable>enable</Nullable>
     <UseWindowsForms>true</UseWindowsForms>
     <OutputType>WinExe</OutputType>
@@ -8,17 +9,20 @@
     <IsPackable>false</IsPackable>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="ILNumerics.Computing" Version="7.4.16" />
-    <PackageReference Include="ILNumerics.Community.Analyzers" Version="7.3.0.66" />
-    <PackageReference Include="ILNumerics.Drawing" Version="7.4.16" />
-    <PackageReference Include="ILNumerics.Drawing.Platforms" Version="7.4.16" />
-    <PackageReference Include="ILNumerics.Toolboxes.Drawing2" Version="7.4.16" />
-    <PackageReference Include="MinVer" Version="7.0.0">
+    <PackageReference Include="ILNumerics.Computing" Version="7.4.62" />
+    <PackageReference Include="ILNumerics.Community.Analyzers" Version="7.7.0.298" PrivateAssets="all" />
+    <PackageReference Include="ILNumerics.Drawing" Version="7.4.62" />
+    <PackageReference Include="ILNumerics.Drawing.Platforms" Version="7.4.62" />
+    <PackageReference Include="ILNumerics.Toolboxes.Drawing2" Version="7.4.62" />
+    <PackageReference Include="MinVer" Version="8.0.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\TikzExport\TikzExport.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="../Shared/ExportDemoScenes.cs" Link="Shared/ExportDemoScenes.cs" />
   </ItemGroup>
 </Project>

@@ -1,4 +1,5 @@
-﻿using System.IO;
+using System;
+using System.IO;
 using ILNumerics.Community.TikzExport.Generator.Elements;
 
 namespace ILNumerics.Community.TikzExport.Generator;
@@ -16,7 +17,7 @@ public class TikzWriter
     /// <param name="writer">The destination writer.</param>
     public TikzWriter(TextWriter writer)
     {
-        _writer = writer;
+        _writer = writer ?? throw new ArgumentNullException(nameof(writer));
     }
 
     /// <summary>
@@ -25,6 +26,7 @@ public class TikzWriter
     /// <param name="picture">The picture to write.</param>
     public void Write(TikzPicture picture)
     {
+        ArgumentNullException.ThrowIfNull(picture);
         _writer.WriteLine(picture.PreTag);
 
         // Render Content (line-by-line)
