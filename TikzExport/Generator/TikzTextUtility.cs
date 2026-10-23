@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 using AnyAscii;
 
@@ -9,14 +12,6 @@ namespace ILNumerics.Community.TikzExport.Generator;
 /// </summary>
 public static class TikzTextUtility
 {
-    private static readonly Regex EscapeBackslashRegex = new(@"\\(?=[^\{\}_\^])", RegexOptions.Compiled | RegexOptions.CultureInvariant);
-    private static readonly Regex EscapeOutsideMathRegex = new(@"(?!\B\$[^\$]*)([\{\}_\^])(?![^\$]*\$\B)", RegexOptions.Compiled | RegexOptions.CultureInvariant);
-    private static readonly Regex JoinMathEnvironmentsRegex = new(@"\$([\^_\ \+\-\*\/]*)\$", RegexOptions.Compiled | RegexOptions.CultureInvariant);
-    private static readonly Regex MathSequenceSubscriptBraceRegex = new(@"([\w\d]+_\{[\w\d]+\})", RegexOptions.Compiled | RegexOptions.CultureInvariant);
-    private static readonly Regex MathSequenceSubscriptRegex = new(@"(.*)\b([\w\d]+_[\w\d]{1})\b(.*)", RegexOptions.Compiled | RegexOptions.CultureInvariant);
-    private static readonly Regex MathSequenceSuperscriptBraceRegex = new(@"([\w\d]+\^\{[\w\d]+\})", RegexOptions.Compiled | RegexOptions.CultureInvariant);
-    private static readonly Regex MathSequenceSuperscriptRegex = new(@"(.*)\b([\w\d]+\^[\w\d]{1})\b(.*)", RegexOptions.Compiled | RegexOptions.CultureInvariant);
-
     private static readonly IReadOnlyList<KeyValuePair<string, string>> ReplacementMap =
     [
         new("α", @"${\alpha}$"), new("β", @"${\beta}$"), new("γ", @"${\gamma}$"), new("Γ", @"${\Gamma}$"), new("δ", @"${\delta}$"), new("Δ", @"${\Delta}$"),
@@ -30,9 +25,6 @@ public static class TikzTextUtility
         new("⇒", @"${\Rightarrow}$"), new("⇐", @"${\Leftarrow}$"), new("↔", @"${\leftrightarrow}$"), new("⇔", @"${\Leftrightarrow}$"), new("↦", @"${\mapsto}$")
     ];
 
-    private static readonly Regex ScientificNotationRegex = new(@"([\d]+)\^([\{\}\d\+\-]+)", RegexOptions.Compiled | RegexOptions.CultureInvariant);
-    private static readonly Regex UnescapeMathBracesRegex = new(@"(?!\b\$[^\$]*)\\([\{\}]+)(?![^\$]*\$\b)", RegexOptions.Compiled | RegexOptions.CultureInvariant);
-
     /// <summary>
     /// Escapes the specified text for safe TikZ output.
     /// </summary>
@@ -40,36 +32,56 @@ public static class TikzTextUtility
     /// <returns>The escaped text.</returns>
     public static string EscapeText(string input)
     {
-        foreach (var replacement in ReplacementMap)
-            input = input.Replace(replacement.Key, replacement.Value);
+        ArgumentNullException.ThrowIfNull(input);
+        var result = new StringBuilder();
+        for (var i = 0; i < input.Length; i++)
+        {
+            var ch = input[i];
+            if (ch == '$')
+            {
+                var end = input.IndexOf('$', i + 1);
+                if (end > i + 1)
+                {
+                    result.Append(input, i, end - i + 1);
+                    i = end;
+                    continue;
+                }
+            }
 
-        // Scientific notation
-        input = ScientificNotationRegex.Replace(input, @"$${$1^{$2}}$$");
+            var replacement = ReplacementMap.FirstOrDefault(p => p.Key == ch.ToString());
+            if (replacement.Key != null)
+            {
+                result.Append(replacement.Value);
+                continue;
+            }
 
-        // Detect basic math sequences "a_{a}" and "a^{b}"
-        input = MathSequenceSubscriptRegex.Replace(input, @"$1$$$2$$$3"); // "a_a"
-        input = MathSequenceSuperscriptRegex.Replace(input, @"$1$$$2$$$3"); // "a^a"
-        input = MathSequenceSubscriptBraceRegex.Replace(input, @"$$$1$$"); // "a_{abc}"
-        input = MathSequenceSuperscriptBraceRegex.Replace(input, @"$$$1$$"); // "a^{abc}"
+            if ((ch == '_' || ch == '^') && i > 0 && i + 1 < input.Length)
+            {
+                var match = Regex.Match(input.Substring(i + 1), @"^(?:\{([\w+\-]+)\}|([\w]))", RegexOptions.CultureInvariant);
+                if (match.Success)
+                {
+                    result.Append("${}").Append(ch).Append('{').Append(match.Groups[1].Success ? match.Groups[1].Value : match.Groups[2].Value).Append("}$");
+                    i += match.Length;
+                    continue;
+                }
+            }
+            result.Append(ch switch
+            {
+                '\\' => @"\textbackslash{}",
+                '{' => @"\{",
+                '}' => @"\}",
+                '%' => @"\%",
+                '&' => @"\&",
+                '#' => @"\#",
+                '$' => @"\$",
+                '_' => @"\_",
+                '^' => @"\textasciicircum{}",
+                '~' => @"\textasciitilde{}",
+                '\r' or '\n' => " ",
+                _ => ch.ToString().Transliterate()
+            });
+        }
 
-        // Replace '{', '}', '_', '^' (if not inside math environment)
-        input = EscapeOutsideMathRegex.Replace(input, @"\$1"); // '{}_^'
-
-        // Replace '\' (if not used for escaping above)
-        input = EscapeBackslashRegex.Replace(input, @"\\"); // '\'
-
-        // Revert double escaping of greek letters and math characters
-        input = input.Replace(@"{\\", @"{\");
-
-        // Join consecutive math environments
-        input = JoinMathEnvironmentsRegex.Replace(input, @"$1");
-
-        // Un-escape '\{' in math environment
-        input = UnescapeMathBracesRegex.Replace(input, @"$1"); // '{}'
-
-        // ASCII transliteration (replace all remaining non-ascii characters)
-        input = input.Transliterate();
-
-        return input;
+        return result.ToString();
     }
 }

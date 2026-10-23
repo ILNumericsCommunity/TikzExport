@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using ILNumerics.Drawing;
@@ -60,6 +60,8 @@ public sealed class PGFPlotOptions : List<string>, ITikzElement
     /// </summary>
     public string PostTag => "";
 
+    /// <summary>Rejects automatic binding; set grid styles explicitly instead.</summary>
+    /// <exception cref="NotSupportedException">Automatic binding is not supported.</exception>
     public void Bind(Node node, TikzGlobals globals)
     {
         // NOTE: Don't bind automatically

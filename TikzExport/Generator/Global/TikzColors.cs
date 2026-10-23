@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
@@ -12,10 +12,12 @@ namespace ILNumerics.Community.TikzExport.Generator.Global;
 public class TikzColors : ICollection<Color>, ITikzElement
 {
     private readonly List<Color> _colors = new();
+    private readonly Dictionary<int, string> names = new();
+    private int nextId;
 
     #region KnownColors
 
-    private readonly Dictionary<Color, string> _knownColors = new() { { Color.Black, "black" }, { Color.White, "white" } };
+    private readonly Dictionary<Color, string> _knownColors = new() { { Color.FromArgb(Color.Black.ToArgb()), "black" }, { Color.FromArgb(Color.White.ToArgb()), "white" } };
 
     #endregion
 
@@ -36,7 +38,7 @@ public class TikzColors : ICollection<Color>, ITikzElement
             // Color Definitions
             for (var i = 0; i < Count; i++)
             {
-                var colorName = $"colorDef{i:D2}";
+                var colorName = names[_colors[i].ToArgb()];
                 var color = FormatTikzColor(_colors[i]);
 
                 yield return $"\\definecolor{{{colorName}}}{{rgb}}{{{color}}}";
@@ -49,6 +51,7 @@ public class TikzColors : ICollection<Color>, ITikzElement
     /// </summary>
     public string PostTag => "";
 
+    /// <inheritdoc />
     public void Bind(Node node, TikzGlobals globals)
     {
         // NOTE: Don't bind automatically
@@ -64,13 +67,11 @@ public class TikzColors : ICollection<Color>, ITikzElement
     /// <returns>The TikZ color name.</returns>
     public string GetColorName(Color color)
     {
-        if (_knownColors.TryGetValue(color, out var name))
+        if (_knownColors.TryGetValue(Color.FromArgb(color.ToArgb()), out var name))
             return name;
 
-        if (!_colors.Contains(color))
-            _colors.Add(color);
-
-        return $"colorDef{_colors.IndexOf(color):D2}";
+        Add(color);
+        return names[color.ToArgb()];
     }
 
     /// <summary>
@@ -105,13 +106,14 @@ public class TikzColors : ICollection<Color>, ITikzElement
     /// <param name="item">The color to add.</param>
     public void Add(Color item)
     {
-        if (_knownColors.ContainsKey(item))
+        if (_knownColors.ContainsKey(Color.FromArgb(item.ToArgb())))
             return;
 
         // Prevent duplicates (only add once)
-        if (_colors.Contains(item))
+        if (names.ContainsKey(item.ToArgb()))
             return;
 
+        names.Add(item.ToArgb(), $"colorDef{nextId++:D2}");
         _colors.Add(item);
     }
 
@@ -121,6 +123,8 @@ public class TikzColors : ICollection<Color>, ITikzElement
     public void Clear()
     {
         _colors.Clear();
+        names.Clear();
+        nextId = 0;
     }
 
     /// <summary>
@@ -130,10 +134,10 @@ public class TikzColors : ICollection<Color>, ITikzElement
     /// <returns><c>true</c> when the color is present; otherwise, <c>false</c>.</returns>
     public bool Contains(Color item)
     {
-        if (_knownColors.ContainsKey(item))
+        if (_knownColors.ContainsKey(Color.FromArgb(item.ToArgb())))
             return true;
 
-        return _colors.Contains(item);
+        return names.ContainsKey(item.ToArgb());
     }
 
     /// <summary>
@@ -151,7 +155,13 @@ public class TikzColors : ICollection<Color>, ITikzElement
     /// </summary>
     /// <param name="item">The color to remove.</param>
     /// <returns><c>true</c> when the color was removed; otherwise, <c>false</c>.</returns>
-    public bool Remove(Color item) => _colors.Remove(item);
+    public bool Remove(Color item)
+    {
+        if (!names.Remove(item.ToArgb()))
+            return false;
+        _colors.RemoveAll(c => c.ToArgb() == item.ToArgb());
+        return true;
+    }
 
     /// <summary>
     /// Returns an enumerator that iterates through the colors.
