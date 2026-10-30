@@ -284,6 +284,63 @@ public partial class ExportTests
         Assert.True(copy.First<PlotCube>().AllowRotation);
     }
 
+    [Theory]
+    [InlineData(0)]
+    [InlineData(1)]
+    [InlineData(2)]
+    [InlineData(3)]
+    [InlineData(4)]
+    [InlineData(5)]
+    [InlineData(6)]
+    [InlineData(7)]
+    [InlineData(8)]
+    [InlineData(9)]
+    [InlineData(10)]
+    [InlineData(11)]
+    [InlineData(12)]
+    [InlineData(13)]
+    [InlineData(14)]
+    [InlineData(15)]
+    [InlineData(16)]
+    [InlineData(17)]
+    [InlineData(18)]
+    [InlineData(19)]
+    [InlineData(20)]
+    [InlineData(21)]
+    [InlineData(22)]
+    [InlineData(23)]
+    [InlineData(24)]
+    [InlineData(25)]
+    public void NativeDemoScenesConfigureAndExport(int index)
+    {
+        using var scene = ExportDemoScenes.Create(index);
+        scene.Configure();
+        Assert.False(String.IsNullOrWhiteSpace(ExportText(scene)));
+        scene.Configure();
+        Assert.False(String.IsNullOrWhiteSpace(ExportText(scene)));
+    }
+
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public void NativeBarColorsAcceptAnOmittedCounterpart(bool fillOnly)
+    {
+        using var scope = Scope.Enter();
+        var bar = new BarPlot((Array<float>) new float[,] { { 1, 2, 3 } });
+        if (fillOnly)
+            bar.SetBarColor(1, fillColor: Color.Crimson);
+        else
+            bar.SetBarColor(1, borderColor: Color.Blue);
+        using var scene = new Scene { new PlotCube { bar } };
+        scene.Configure();
+        Assert.False(String.IsNullOrWhiteSpace(ExportText(scene)));
+        Array<float> colors = fillOnly ? bar.Fill.Colors.Storage : bar.Border.Colors.Storage;
+        var expected = fillOnly ? Color.Crimson : Color.Blue;
+        Assert.Equal(expected.R / 255f, colors.GetValue(0, 5));
+        Assert.Equal(expected.G / 255f, colors.GetValue(1, 5));
+        Assert.Equal(expected.B / 255f, colors.GetValue(2, 5));
+    }
+
     private static string ExportText(Scene scene)
     {
         var text = Exporter.ExportString(scene);
